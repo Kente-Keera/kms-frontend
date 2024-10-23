@@ -161,7 +161,10 @@ const _inlineRuntimeConfig = {
       }
     }
   },
-  "public": {},
+  "public": {
+    "NUXT_SERVICES_API": "http://localhost:3000/api/v1/",
+    "IP_ACCESS": ""
+  },
   "motion": {}
 };
 const envOptions = {

@@ -7,6 +7,12 @@ export default defineNuxtConfig({
   build: {
     transpile: ["vuetify", "vue-i18n"],
   },
+  runtimeConfig: {
+    public: {
+      NUXT_SERVICES_API: process.env.NUXT_SERVICES_API,
+      IP_ACCESS: process.env.IP_ACCESS,
+    },
+  },
 
   modules: [
     (_options, nuxt) => {

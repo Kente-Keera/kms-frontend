@@ -20,7 +20,9 @@ declare module 'nuxt/schema' {
    motion: any,
   }
   interface PublicRuntimeConfig {
+   NUXT_SERVICES_API: string,
 
+   IP_ACCESS: string,
   }
 }
 declare module 'vue' {
