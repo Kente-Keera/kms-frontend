@@ -3,9 +3,11 @@ import { defineNuxtConfig } from 'nuxt/config';
 
 export default defineNuxtConfig({
   ssr: false,
+
   build: {
     transpile: ["vuetify", "vue-i18n"],
   },
+
   modules: [
     (_options, nuxt) => {
       nuxt.hooks.hook("vite:extendConfig", (config) => {
@@ -22,6 +24,7 @@ export default defineNuxtConfig({
     "@vueuse/motion/nuxt",
     "nuxt-swiper",
   ],
+
   vite: {
     vue: {
       template: {
@@ -41,13 +44,18 @@ export default defineNuxtConfig({
       }
     }
   },
+
   css: ["~/assets/fonts/main.css", "~/styles/main.scss"],
+
   sourcemap: {
     server: false,
     client: false,
   },
+
   alias: {
     '@': '/Users/apple/Desktop/masterProject/frontend',
     '~': '/Users/apple/Desktop/masterProject/frontend'
   },
+
+  compatibilityDate: '2024-10-23',
 });

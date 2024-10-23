@@ -13,31 +13,63 @@
           <template v-slot:item.1>
             <v-sheet class="pa-4">
               <h2 class="text-h5 mb-4">Knowledge Profile</h2>
-              <v-form @submit.prevent="nextStep">
+              <v-form>
                 <v-text-field
                   v-model="knowledgeProfile.title"
                   label="Title"
                   required
+                  variant="outlined"
                 ></v-text-field>
                 <v-textarea
                   v-model="knowledgeProfile.description"
                   label="Short Description"
                   required
+                  variant="outlined"
                 ></v-textarea>
+                <v-combobox
+                  v-model="knowledgeProfile.type"
+                  :items="availableType"
+                  label="Type of Knowledge"
+                  variant="outlined"
+                ></v-combobox>
+                <v-combobox
+                  v-model="knowledgeProfile.group"
+                  :items="availableGroup"
+                  label="Group of Knowledge"
+                  variant="outlined"
+                ></v-combobox>
+                <v-combobox
+                  v-model="knowledgeProfile.category"
+                  :items="availableCategory"
+                  label="Category"
+                  variant="outlined"
+                ></v-combobox>
+                <v-combobox
+                  v-model="knowledgeProfile.subcategory"
+                  :items="availableSubcategory"
+                  label="Sub-Category"
+                  variant="outlined"
+                ></v-combobox>
                 <v-combobox
                   v-model="knowledgeProfile.tags"
                   :items="availableTags"
-                  label="Tags"
+                  label="Tag Knowledge"
                   multiple
                   chips
                   small-chips
+                  variant="outlined"
+                  allow-overflow
+                  :filter="filterTags"
                 ></v-combobox>
-                <v-select
+                <v-combobox
                   v-model="knowledgeProfile.targetGroup"
-                  :items="targetGroups"
-                  label="Target Group"
-                  required
-                ></v-select>
+                  :items="availabletargetGroups"
+                  label="Target Reader"
+                  multiple
+                  chips
+                  small-chips
+                  variant="outlined"
+                ></v-combobox>
                 <v-file-input
                   v-model="knowledgeProfile.image"
                   label="Cover Image"
@@ -50,12 +82,12 @@
                   color="primary"
                   flat
                   rounded="3"
-                  @click="step--"
-                  disabled
+                  @click="prevStep"
+                  :disabled="step === 1"
                 >
                   Previous
                 </v-btn>
-                <v-btn color="primary" flat rounded="3" @click="step++">
+                <v-btn color="primary" flat rounded="3" @click="nextStep">
                   Next
                 </v-btn>
               </div>
@@ -66,17 +98,19 @@
           <template v-slot:item.2>
             <v-sheet class="pa-4">
               <h2 class="text-h5 mb-4">Knowledge Content</h2>
-              <v-form @submit.prevent="nextStep">
-                <v-radio-group v-model="contentType" label="Content Type">
+              <v-form>
+                <v-radio-group v-model="contentType" label="Content form">
                   <v-radio label="Write Text" value="text"></v-radio>
                   <v-radio label="Upload File" value="file"></v-radio>
                 </v-radio-group>
+                
                 <v-textarea
                   v-if="contentType === 'text'"
                   v-model="content"
-                  label="Content"
+                  label="Type your content here!"
                   rows="10"
                   required
+                  variant="outlined"
                 ></v-textarea>
                 <v-file-input
                   v-else
@@ -87,10 +121,10 @@
                 ></v-file-input>
               </v-form>
               <div class="d-flex justify-space-between mt-5">
-                <v-btn color="primary" flat rounded="3" @click="step--">
+                <v-btn color="primary" flat rounded="3" @click="prevStep">
                   Previous
                 </v-btn>
-                <v-btn color="primary" flat rounded="3" @click="step++">
+                <v-btn color="primary" flat rounded="3" @click="nextStep">
                   Next
                 </v-btn>
               </div>
@@ -115,6 +149,27 @@
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-title>
+                    Type of knowledge: {{ knowledgeProfile.type || "Not selected" }}
+                  </v-list-item-title>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-title>
+                    Group: {{ knowledgeProfile.group || "Not selected" }}
+                  </v-list-item-title>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-title>
+                    Category: {{ knowledgeProfile.category || "Not selected" }}
+                  </v-list-item-title>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-title>
+                    Subcategory:
+                    {{ knowledgeProfile.subcategory || "Not selected" }}
+                  </v-list-item-title>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-title>
                     Tags:
                     {{
                       knowledgeProfile.tags.length
@@ -130,9 +185,9 @@
                   </v-list-item-title>
                 </v-list-item>
                 <v-list-item>
-                  <v-list-item-title
-                    >Content Type: {{ contentType }}</v-list-item-title
-                  >
+                  <v-list-item-title>
+                    Content Type: {{ contentType }}
+                  </v-list-item-title>
                 </v-list-item>
                 <v-list-item v-if="contentType === 'text'">
                   <v-list-item-title>
@@ -147,54 +202,29 @@
                   </v-list-item-title>
                 </v-list-item>
                 <v-list-item v-else>
-                  <v-list-item-title
-                    >File:
-                    {{
-                      file ? file.name : "No file selected"
-                    }}</v-list-item-title
-                  >
+                  <v-list-item-title>
+                    File: {{ file ? file.name : "No file selected" }}
+                  </v-list-item-title>
                 </v-list-item>
                 <v-list-item v-if="knowledgeProfile.image">
-                  <v-list-item-title
-                    >Cover Image:
-                    {{ knowledgeProfile.image.name }}</v-list-item-title
-                  >
+                  <v-list-item-title>
+                    Cover Image: {{ knowledgeProfile.image.name }}
+                  </v-list-item-title>
                 </v-list-item>
               </v-list>
+              <div class="d-flex justify-space-between mt-5">
+                <v-btn color="primary" flat rounded="3" @click="prevStep">
+                  Previous
+                </v-btn>
+                <v-btn color="success" flat rounded="3" @click="onBackToShare()">
+                  Submit
+                </v-btn>
+              </div>
             </v-sheet>
-            <div class="d-flex justify-space-between mt-5">
-              <v-btn color="primary" flat rounded="3" @click="step--">
-                Previous
-              </v-btn>
-              <v-btn color="success" flat rounded="3" @click="onBackToShare()">
-                Submit
-              </v-btn>
-            </div>
           </template>
         </v-stepper>
       </v-col>
     </v-row>
-
-    <!-- Navigation buttons for previous, next, and submit -->
-
-    <!-- Success dialog after submission -->
-    <v-dialog v-model="successDialog" max-width="400">
-      <v-card>
-        <v-card-title class="text-h5 text-center">Success!</v-card-title>
-        <v-card-text class="text-center">
-          <v-icon color="success" size="64">mdi-check-circle</v-icon>
-          <p class="mt-4">Your Knowledge has been successfully created.</p>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" @click="closeSuccessDialog">Close</v-btn>
-          <v-spacer></v-spacer>
-        </v-card-actions>
-        <!-- <div class="d-flex justify-center pa-4">
-          <v-btn to="/sharing"> Back to Search </v-btn>
-        </div> -->
-      </v-card>
-    </v-dialog>
   </v-container>
 </template>
 
@@ -207,16 +237,50 @@ export default {
       knowledgeProfile: {
         title: "",
         description: "",
+        type: "",
+        group: "",
+        category: "",
+        subcategory: "",
         tags: [],
-        targetGroup: "",
+        targetGroup: [],
         image: null,
       },
       contentType: "text",
       content: "",
       file: null,
       successDialog: false,
+      availableType: [
+        "Tacit Knowledge",
+        "Explicit Knowledge",
+      ],
+      availableGroup: [
+        "Requirement",
+        "Design",
+        "Construction",
+        "Testing",
+        "Maintenance",
+        "Quality",
+        "Management",
+      ],
+      availableCategory: [
+        "Type of Requirement",
+        "Priority of Requirement",
+        "User Roles",
+        "Requirement Status",
+        "Integration Testing",
+        "Unit Testing",
+        "Planning",
+        "Execution",
+      ],
+      availableSubcategory: [
+        "Functional Requirement",
+        "Non-Functional Requirement",
+        "Knowledge of Documenting Requirement",
+        "Design Pattern",
+        "System Architecture Knowledge",
+      ],
       availableTags: [
-        "Programming Languages",
+        "Type of Requirement",
         "Web Development",
         "Mobile Development",
         "Database",
@@ -232,15 +296,16 @@ export default {
         "Testing",
         "UI/UX Design",
       ],
-      targetGroups: [
+      availabletargetGroups: [
         "All",
+        "Executive Team",
+        "Knowledge Team",
         "Product Owner",
         "Project Manager",
-        "Software Architecture",
+        "Software Architect",
         "Developer",
         "Tester",
         "Knowledge Team",
-        "Executive Team",
       ],
     };
   },
@@ -250,30 +315,19 @@ export default {
         this.step++;
       }
     },
-    onBackToShare() {
-      this.successDialog = true;
-
-      setTimeout(() => {
-        this.$router.push("/sharing");
-      }, 3000);
-    },
-
     prevStep() {
       if (this.step > 1) {
         this.step--;
       }
     },
+    onBackToShare() {
+      this.successDialog = true;
+      setTimeout(() => {
+        this.$router.push("/sharing");
+      }, 3000);
+    },
     handleFileUpload(event) {
       this.file = event.target.files[0];
-    },
-    submitKnowledge() {
-      console.log("Submitting:", {
-        ...this.knowledgeProfile,
-        contentType: this.contentType,
-        content: this.content,
-        file: this.file,
-      });
-      this.successDialog = true;
     },
     closeSuccessDialog() {
       this.successDialog = false;
@@ -285,13 +339,23 @@ export default {
       this.knowledgeProfile = {
         title: "",
         description: "",
+        type: "",
+        group: "",
+        category: "",
+        subcategory: "",
         tags: [],
-        targetGroup: "",
+        targetGroup: [],
         image: null,
       };
       this.contentType = "text";
       this.content = "";
       this.file = null;
+    },
+    filterTags(item, queryText, itemText) {
+      return itemText
+        .toString()
+        .toLowerCase()
+        .includes(queryText.toLowerCase());
     },
   },
 };

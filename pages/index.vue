@@ -46,7 +46,6 @@
                 <v-card-title>{{ resource.title }}</v-card-title>
                 <v-card-subtitle>
                   {{ resource.subtitle }}
-                  <v-icon color="error" icon="mdi-fire-circle" size="small" class="ml-2"></v-icon>
                 </v-card-subtitle>
                 <v-card-text>
                   <v-row align="center" class="mx-0">
@@ -80,7 +79,6 @@
                 <v-card-title>{{ resource.title }}</v-card-title>
                 <v-card-subtitle>
                   {{ resource.subtitle }}
-                  <v-icon color="error" icon="mdi-fire-circle" size="small" class="ml-2"></v-icon>
                 </v-card-subtitle>
                 <v-card-text>
                   <v-row align="center" class="mx-0">
@@ -115,7 +113,7 @@ import { ref, computed } from 'vue'
 const searchQuery = ref('')
 const activeTab = ref('recent')
 
-const tags = ['#SprintRetrospective', '#ContinuousImprovement', '#StandupMeetings', '#PeerReview']
+const tags = ['#Requirement', '#Design', '#Construction', '#Testing','#Maintenance', '#Quality', '#Management']
 
 const resources = [
   {

@@ -2,17 +2,18 @@
   <v-container fluid class="bg-light-gray pa-0">
     <!-- Search Section -->
     <v-row class="search-section py-8">
-      <v-col cols="12" md="8" class="mx-auto text-left">
-        <h1 class="display-2 font-weight-bold mb-6">Find Your Knowledge Here</h1>
-        <v-row class="align-left">
-          <v-col  cols="12" md="8">
+      <v-col cols="12" md="8" class="mx-auto text-center">
+        <h2 class="display-2 font-weight-bold mb-6">Search Knowledge Here!</h2>
+        <v-row class="align-center">
+          <v-col>
             <v-text-field
+                justify-center
                 v-model="searchQuery"
                 placeholder="Search for Knowledge"
                 prepend-inner-icon="mdi-magnify"
                 variant="outlined"
                 hide-details
-                class="justify-center custom-search-bar mb-6"
+                class="custom-search-bar mb-6"
                 @keyup.enter="performSearch"
               ></v-text-field>
           </v-col>
@@ -69,7 +70,6 @@
       <!-- Recommended Resources Section -->
       <v-col cols="12" md="9">
         <div class="d-flex justify-between align-center mb-4">
-          <h2 class="text-h4 font-weight-bold">Recommended Resources</h2>
           <v-select v-model="sortBy" :items="sortOptions" label="Sort by" class="sort-select"></v-select>
         </div>
 
