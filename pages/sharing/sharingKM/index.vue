@@ -216,7 +216,7 @@
                 <v-btn color="primary" flat rounded="3" @click="prevStep">
                   Previous
                 </v-btn>
-                <v-btn color="success" flat rounded="3" @click="onBackToShare()">
+                <v-btn color="success" flat rounded="3" @click="submitKnowledge">
                   Submit
                 </v-btn>
               </div>
@@ -225,6 +225,23 @@
         </v-stepper>
       </v-col>
     </v-row>
+
+    <!-- Success Popup -->
+    <v-dialog v-model="successDialog" persistent max-width="600px">
+      <v-card class="pa-4 text-center mx-auto d-flex flex-column align-center" elevation="12" rounded="lg">
+        <v-icon class="mb-5" color="success" icon="mdi-check-circle" size="112"></v-icon>
+        <h2 class="text-h5 mb-6">Knowledge Added Successfully</h2>
+        <p class="mb-4 text-medium-emphasis text-body-2">
+          Your knowledge has been successfully added to the system. You will be redirected to the sharing page shortly.
+        </p>
+        <v-divider class="mb-4"></v-divider>
+        <div class="text-end">
+          <v-btn class="text-none" color="success" variant="flat" width="90" rounded @click="closeSuccessDialog">
+            Done
+          </v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -320,10 +337,13 @@ export default {
         this.step--;
       }
     },
-    onBackToShare() {
+    submitKnowledge() {
+      // Here you would typically send the data to your backend
+      // For now, we'll just show the success dialog
       this.successDialog = true;
+      // Set a timeout to redirect after 3 seconds
       setTimeout(() => {
-        this.$router.push("/sharing");
+        this.closeSuccessDialog();
       }, 3000);
     },
     handleFileUpload(event) {

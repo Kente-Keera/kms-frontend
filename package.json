@@ -14,12 +14,14 @@
     "@pinia/nuxt": "^0.5.1",
     "@vueuse/motion": "^2.1.0",
     "chart.js": "^4.4.4",
+    "echarts": "^5.5.1",
     "lucide-vue-next": "^0.451.0",
     "nuxt": "^3.11.2",
     "nuxt-swiper": "^1.2.2",
     "pinia": "^2.1.7",
     "vue": "^3.4.27",
     "vue-chartjs": "^5.3.1",
+    "vue-echarts": "^7.0.3",
     "vue-router": "^4.3.2"
   },
   "devDependencies": {

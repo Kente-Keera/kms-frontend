@@ -48,12 +48,12 @@ const onToggleLogin = async () => {
 
 <template>
   <v-row no-gutters class="h-screen overflow-hidden">
-    <v-col cols="12" md="6" class="bg-black d-flex align-center">
-      <v-img alt="icon" src="../../public/img/nav/logo.png" height="80px">
+    <v-col cols="12" md="8" class="bg-white d-flex align-center">
+      <v-img alt="icon" src="../../public/img/nav/logopic5.svg" height="800px">
       </v-img>
     </v-col>
-    <v-col cols="12" md="6" class="d-flex justify-center align-center">
-      <v-card flat width="580px" class="py-8 px-15" color="rgba(0, 0, 0, 0)">
+    <v-col cols="12" md="4" class="d-flex justify-left align-center">
+      <v-card flat width="600px" class="py-10 px-15" color="bg-white">
         <v-form ref="form" @submit.prevent="onToggleLogin" v-model="isValid">
           <div class="d-flex ga-5 align-center mb-10">
             <div class="pt-2">
@@ -129,15 +129,12 @@ const onToggleLogin = async () => {
   width: 100%;
   top: 0;
   left: 0;
-  background: linear-gradient(
-    to right,
-    rgba(44, 61, 89, 0.8) 0%,
-    rgba(5, 28, 44, 1) 100%
-  );
+  background: rgb(255, 255, 255)
+  ;
 }
 
 .text-login-color {
-  background: linear-gradient(to right, #f4f4f4, #8888);
+  background: linear-gradient(to right, #a9a7a7, #01010188);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   width: 100%;

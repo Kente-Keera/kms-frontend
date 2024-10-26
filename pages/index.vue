@@ -106,6 +106,7 @@
                 </v-card-subtitle>
                 <v-card-text>
                   <v-row align="center" class="mx-0">
+                    
                     <v-rating
                       :model-value="resource.rating"
                       color="amber"
@@ -114,10 +115,12 @@
                       half-increments
                       readonly
                     ></v-rating>
+                  
                     <div class="text-grey ms-2">
                       {{ resource.reviews }} Reviews
                     </div>
                   </v-row>
+                  
                 </v-card-text>
                 <v-card-actions>
                   <v-btn
