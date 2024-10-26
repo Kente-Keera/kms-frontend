@@ -39,50 +39,51 @@
         <v-tab value="popular">Popular Resources</v-tab>
       </v-tabs>
 
-      <!-- {{ fetchData }} -->
-
       <v-window v-model="activeTab">
         <v-window-item value="recent">
           <h2 class="text-h4 mb-6 text-center">{{ tabTitle }} CC</h2>
-          <v-row>
+          <v-row class="pa-5">
             <v-col
-              v-for="knowledge in fetchData"
-              :key="knowledge.id"
+              v-for="(knowledge, index) in fetchData.slice(0, 6)"
+              :key="index"
               cols="12"
               sm="6"
               md="4"
             >
-              <v-card class="mx-auto resource-card" elevation="2">
+              <v-card class="resource-card">
                 <v-img
                   src="https://cdn.vuetifyjs.com/images/cards/forest-art.jpg"
-                  height="200px"
+                  height="180px"
                   cover
                 ></v-img>
-
-                <v-card-title>{{ knowledge.title }}</v-card-title>
-                <v-card-subtitle> {{ knowledge.description }} </v-card-subtitle>
+                <v-card-title class="mt-4"
+                  ><h3>{{ knowledge.title }}</h3></v-card-title
+                >
                 <v-card-text>
-                  <!-- <v-row align="center" class="mx-0">
-                    <v-rating
-                      :model-value="resource.id"
-                      color="amber"
-                      density="compact"
-                      size="small"
-                      half-increments
-                      readonly
-                    ></v-rating>
-                    <div class="text-grey ms-2">xxx Reviews</div>
-                  </v-row> -->
+                  <div class="d-flex justify-between">
+                    <div class="rating d-flex align-center">
+                      <v-icon class="mr-2" color="#f4b400">mdi-star</v-icon>
+                      <span>
+                        <b>{{ knowledge.avg_rating }}</b> Score</span
+                      >
+                      <span class="views ml-2 ms-2.5"
+                        >| <b>{{ knowledge?.comment.length }}</b> Comments
+                      </span>
+                    </div>
+                  </div>
+                  <p class="mt-2">{{ knowledge.description }}</p>
+                  <div class="tags d-flex flex-wrap mt-3">
+                    <v-chip
+                      v-for="(tag, index) in JSON.parse(knowledge?.tag)?.data"
+                      :key="index"
+                      class="mr-2 mb-2"
+                      color="gray"
+                      text-color="secondary"
+                    >
+                      {{ tag }}
+                    </v-chip>
+                  </div>
                 </v-card-text>
-                <v-card-actions>
-                  <v-btn
-                    color="grey-darken-3"
-                    variant="outlined"
-                    @click="viewResource(resource.id)"
-                  >
-                    View More
-                  </v-btn>
-                </v-card-actions>
               </v-card>
             </v-col>
           </v-row>
@@ -106,7 +107,6 @@
                 </v-card-subtitle>
                 <v-card-text>
                   <v-row align="center" class="mx-0">
-                    
                     <v-rating
                       :model-value="resource.rating"
                       color="amber"
@@ -115,12 +115,11 @@
                       half-increments
                       readonly
                     ></v-rating>
-                  
+
                     <div class="text-grey ms-2">
                       {{ resource.reviews }} Reviews
                     </div>
                   </v-row>
-                  
                 </v-card-text>
                 <v-card-actions>
                   <v-btn

@@ -1,9 +1,9 @@
 {
-  "_hash": "bdUeYDxTQK",
+  "_hash": "FdfVyKvsQo",
   "project": {
-    "rootDir": "/Users/apple/Desktop/masterProject/frontend"
+    "rootDir": "/Users/harrie/Desktop/kente/kms-frontend"
   },
   "versions": {
-    "nuxt": "3.13.2"
+    "nuxt": "3.11.2"
   }
 }

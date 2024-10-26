@@ -2,7 +2,6 @@
   "compilerOptions": {
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "noEmit": true,
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
@@ -17,12 +16,10 @@
         "./types/nitro-imports"
       ],
       "~/*": [
-        "../*",
-        "../*"
+        "../../../../../apple/Desktop/masterProject/frontend/*"
       ],
       "@/*": [
-        "../*",
-        "../*"
+        "../../../../../apple/Desktop/masterProject/frontend/*"
       ],
       "~~/*": [
         "../*",
@@ -50,17 +47,14 @@
       "@unhead/vue": [
         "../node_modules/@unhead/vue"
       ],
-      "@nuxt/devtools": [
-        "../node_modules/@nuxt/devtools"
-      ],
       "@vue/runtime-core": [
         "../node_modules/@vue/runtime-core"
       ],
       "@vue/compiler-sfc": [
         "../node_modules/@vue/compiler-sfc"
       ],
-      "unplugin-vue-router/client": [
-        "../node_modules/unplugin-vue-router/client"
+      "@vue/runtime-dom": [
+        "../node_modules/@vue/runtime-dom"
       ],
       "@nuxt/schema": [
         "../node_modules/@nuxt/schema"
@@ -72,10 +66,10 @@
         "../node_modules/nuxt/dist/core/runtime/nitro/paths"
       ],
       "~": [
-        "./.."
+        "../../../../../apple/Desktop/masterProject/frontend"
       ],
       "@": [
-        "./.."
+        "../../../../../apple/Desktop/masterProject/frontend"
       ],
       "~~": [
         "./.."
@@ -97,21 +91,13 @@
       ],
       "pinia": [
         "../node_modules/pinia/dist/pinia"
-      ],
-      "#vue-router": [
-        "./vue-router"
       ]
-    },
-    "lib": [
-      "esnext",
-      "webworker",
-      "dom.iterable"
-    ]
+    }
   },
   "include": [
     "./types/nitro-nuxt.d.ts",
     "../node_modules/@pinia/nuxt/runtime/server",
-    "../../../../Deskt/runtime/server",
+    "../../../../Desk/runtime/server",
     "../node_modules/nuxt-swiper/runtime/server",
     "../node_modules/@nuxt/devtools/runtime/server",
     "../node_modules/@nuxt/telemetry/runtime/server",

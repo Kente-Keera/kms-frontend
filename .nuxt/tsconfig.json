@@ -20,17 +20,14 @@
       "@unhead/vue": [
         "../node_modules/@unhead/vue"
       ],
-      "@nuxt/devtools": [
-        "../node_modules/@nuxt/devtools"
-      ],
       "@vue/runtime-core": [
         "../node_modules/@vue/runtime-core"
       ],
       "@vue/compiler-sfc": [
         "../node_modules/@vue/compiler-sfc"
       ],
-      "unplugin-vue-router/client": [
-        "../node_modules/unplugin-vue-router/client"
+      "@vue/runtime-dom": [
+        "../node_modules/@vue/runtime-dom"
       ],
       "@nuxt/schema": [
         "../node_modules/@nuxt/schema"
@@ -39,16 +36,10 @@
         "../node_modules/nuxt"
       ],
       "~": [
-        ".."
-      ],
-      "~/*": [
-        "../*"
+        "../../../../../apple/Desktop/masterProject/frontend"
       ],
       "@": [
-        ".."
-      ],
-      "@/*": [
-        "../*"
+        "../../../../../apple/Desktop/masterProject/frontend"
       ],
       "~~": [
         ".."
@@ -87,13 +78,13 @@
         "../node_modules/pinia/dist/pinia"
       ],
       "#vue-router": [
-        "../node_modules/vue-router"
+        "./vue-router-stub"
       ],
       "#imports": [
         "./imports"
       ],
       "#app-manifest": [
-        "./manifest/meta/dev.json"
+        "./manifest/meta/dev"
       ],
       "#build": [
         "."
@@ -105,34 +96,25 @@
         "./components"
       ]
     },
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "target": "ESNext",
-    "allowJs": true,
-    "resolveJsonModule": true,
-    "moduleDetection": "force",
-    "isolatedModules": true,
-    "verbatimModuleSyntax": true,
-    "strict": true,
-    "noUncheckedIndexedAccess": false,
     "forceConsistentCasingInFileNames": true,
-    "noImplicitOverride": true,
-    "module": "ESNext",
-    "noEmit": true,
-    "lib": [
-      "ESNext",
-      "dom",
-      "dom.iterable",
-      "webworker"
-    ],
     "jsx": "preserve",
     "jsxImportSource": "vue",
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "useDefineForClassFields": true,
+    "strict": true,
+    "noImplicitThis": true,
+    "esModuleInterop": true,
     "types": [
       "swiper/vue"
     ],
-    "moduleResolution": "Bundler",
-    "useDefineForClassFields": true,
-    "noImplicitThis": true,
+    "verbatimModuleSyntax": true,
+    "allowJs": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true
   },
   "include": [
@@ -140,31 +122,22 @@
     "../.config/nuxt.*",
     "../**/*",
     "../node_modules/@pinia/nuxt/runtime",
-    "../node_modules/@pinia/nuxt/dist/runtime",
-    "../../../../Deskt/runtime",
-    "../../../../Deskt/dist/runtime",
+    "../../../../Desk/runtime",
     "../node_modules/nuxt-swiper/runtime",
-    "../node_modules/nuxt-swiper/dist/runtime",
     "../node_modules/@nuxt/devtools/runtime",
-    "../node_modules/@nuxt/devtools/dist/runtime",
     "../node_modules/@nuxt/telemetry/runtime",
-    "../node_modules/@nuxt/telemetry/dist/runtime",
+    "../../../../../apple/Desktop/masterProject/frontend",
     ".."
   ],
   "exclude": [
-    "../dist",
     "../node_modules",
     "../node_modules/nuxt/node_modules",
     "../node_modules/@pinia/nuxt/runtime/server",
-    "../node_modules/@pinia/nuxt/dist/runtime/server",
-    "../../../../Deskt/runtime/server",
-    "../../../../Deskt/dist/runtime/server",
+    "../../../../Desk/runtime/server",
     "../node_modules/nuxt-swiper/runtime/server",
-    "../node_modules/nuxt-swiper/dist/runtime/server",
     "../node_modules/@nuxt/devtools/runtime/server",
-    "../node_modules/@nuxt/devtools/dist/runtime/server",
     "../node_modules/@nuxt/telemetry/runtime/server",
-    "../node_modules/@nuxt/telemetry/dist/runtime/server",
+    "../dist",
     "../.output"
   ]
 }
