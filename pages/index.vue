@@ -9,15 +9,32 @@
           Your journey to discovery starts here. Explore endless insights,
           resources, and knowledge to fuel your growth.
         </p>
-        <v-text-field
-          v-model="searchQuery"
-          placeholder="Search for Knowledge"
-          prepend-inner-icon="mdi-magnify"
-          variant="outlined"
-          hide-details
-          class="custom-search-bar mb-6"
-          @keyup.enter="performSearch"
-        ></v-text-field>
+        <v-row dense>
+          <v-col cols="12" md="10">
+            <v-autocomplete
+              v-model="searchQuery"
+              :items="suggestList"
+              placeholder="Search for Knowledge"
+              prepend-inner-icon="mdi-magnify"
+              variant="outlined"
+              hide-details
+              class="custom-search-bar mb-5 w-100"
+              @update:search="updateSearchSuggestions"
+              @keyup.enter="performSearch"
+            ></v-autocomplete>
+          </v-col>
+          <v-col cols="12" md="2">
+            <v-btn
+              color="secondary"
+              class="text-capitalize text-none w-100"
+              height="56"
+              flat
+              @click="onSearchPage()"
+              >Search</v-btn
+            >
+          </v-col>
+        </v-row>
+
         <v-chip-group class="justify-center">
           <v-chip
             v-for="tag in tags"
@@ -41,7 +58,7 @@
 
       <v-window v-model="activeTab">
         <v-window-item value="recent">
-          <h2 class="text-h4 mb-6 text-center">{{ tabTitle }} CC</h2>
+          <h2 class="text-h4 mb-6 text-center">{{ tabTitle }}</h2>
           <v-row class="pa-5">
             <v-col
               v-for="(knowledge, index) in fetchData.slice(0, 6)"
@@ -50,7 +67,10 @@
               sm="6"
               md="4"
             >
-              <v-card class="resource-card">
+              <v-card
+                class="resource-card h-100"
+                @click="viewResource(knowledge.id)"
+              >
                 <v-img
                   src="https://cdn.vuetifyjs.com/images/cards/forest-art.jpg"
                   height="180px"
@@ -74,7 +94,7 @@
                   <p class="mt-2">{{ knowledge.description }}</p>
                   <div class="tags d-flex flex-wrap mt-3">
                     <v-chip
-                      v-for="(tag, index) in JSON.parse(knowledge?.tag)?.data"
+                      v-for="(tag, index) in knowledge?.tag.split(',')"
                       :key="index"
                       class="mr-2 mb-2"
                       color="gray"
@@ -91,45 +111,48 @@
 
         <v-window-item value="popular">
           <h2 class="text-h4 mb-6 text-center">{{ tabTitle }}</h2>
-          <v-row>
+          <v-row class="pa-5">
             <v-col
-              v-for="resource in resources"
-              :key="resource.id"
+              v-for="(knowledge, index) in fetchData.slice(0, 6)"
+              :key="index"
               cols="12"
               sm="6"
               md="4"
             >
-              <v-card class="mx-auto resource-card" elevation="2">
-                <v-img :src="resource.image" height="200px" cover></v-img>
-                <v-card-title>{{ resource.title }}</v-card-title>
-                <v-card-subtitle>
-                  {{ resource.subtitle }}
-                </v-card-subtitle>
+              <v-card class="resource-card">
+                <v-img
+                  src="https://cdn.vuetifyjs.com/images/cards/forest-art.jpg"
+                  height="180px"
+                  cover
+                ></v-img>
+                <v-card-title class="mt-4"
+                  ><h3>{{ knowledge?.title }}</h3></v-card-title
+                >
                 <v-card-text>
-                  <v-row align="center" class="mx-0">
-                    <v-rating
-                      :model-value="resource.rating"
-                      color="amber"
-                      density="compact"
-                      size="small"
-                      half-increments
-                      readonly
-                    ></v-rating>
-
-                    <div class="text-grey ms-2">
-                      {{ resource.reviews }} Reviews
+                  <div class="d-flex justify-between">
+                    <div class="rating d-flex align-center">
+                      <v-icon class="mr-2" color="#f4b400">mdi-star</v-icon>
+                      <span>
+                        <b>{{ knowledge?.avg_rating || 0 }}</b> Score</span
+                      >
+                      <span class="views ml-2 ms-2.5"
+                        >| <b>{{ knowledge?.comment?.length }}</b> Comments
+                      </span>
                     </div>
-                  </v-row>
+                  </div>
+                  <p class="mt-2">{{ knowledge?.description }}</p>
+                  <div class="tags d-flex flex-wrap mt-3">
+                    <v-chip
+                      v-for="(tag, index) in knowledge?.tag.split(',')"
+                      :key="index"
+                      class="mr-2 mb-2"
+                      color="gray"
+                      text-color="secondary"
+                    >
+                      {{ tag }}
+                    </v-chip>
+                  </div>
                 </v-card-text>
-                <v-card-actions>
-                  <v-btn
-                    color="grey-darken-3"
-                    variant="outlined"
-                    @click="viewResource(resource.id)"
-                  >
-                    Learn More
-                  </v-btn>
-                </v-card-actions>
               </v-card>
             </v-col>
           </v-row>
@@ -144,13 +167,13 @@ import { ref, computed } from "vue";
 
 // ###############
 import { useServiceStore } from "../../stores/serviceStore.ts";
+import { CloudFog } from "lucide-vue-next";
 const store = useServiceStore();
 
 await store.getKnowledge();
 const fetchData = ref(store.knowledge);
 // ###############
 
-const searchQuery = ref("");
 const activeTab = ref("recent");
 
 const tags = [
@@ -163,67 +186,11 @@ const tags = [
   "#Management",
 ];
 
-const resources = [
-  {
-    id: 1,
-    title: "Introduction to Scrum",
-    subtitle: "A guide to Agile Scrum methodologies",
-    image: "https://cdn.vuetifyjs.com/images/cards/forest-art.jpg",
-    rating: 4,
-    reviews: 64,
-  },
-  {
-    id: 2,
-    title: "Continuous Improvement",
-    subtitle: "The importance of ongoing improvements in projects",
-    image: "https://cdn.vuetifyjs.com/images/cards/forest-art.jpg",
-    rating: 4.5,
-    reviews: 30,
-  },
-  {
-    id: 3,
-    title: "Standup Meetings 101",
-    subtitle: "How to run effective standup meetings",
-    image: "https://cdn.vuetifyjs.com/images/cards/forest-art.jpg",
-    rating: 3.5,
-    reviews: 45,
-  },
-  {
-    id: 4,
-    title: "Agile Development",
-    subtitle: "Understanding Agile methodology in depth",
-    image: "https://cdn.vuetifyjs.com/images/cards/forest-art.jpg",
-    rating: 5,
-    reviews: 98,
-  },
-  {
-    id: 5,
-    title: "Sprint Retrospectives",
-    subtitle: "How to reflect and improve after every sprint",
-    image: "https://cdn.vuetifyjs.com/images/cards/forest-art.jpg",
-    rating: 4.8,
-    reviews: 80,
-  },
-  {
-    id: 6,
-    title: "Team Collaboration Tools",
-    subtitle: "The best tools for effective collaboration",
-    image: "https://cdn.vuetifyjs.com/images/cards/forest-art.jpg",
-    rating: 4.3,
-    reviews: 60,
-  },
-];
-
 const tabTitle = computed(() => {
   return activeTab.value === "recent"
     ? "Latest Knowledge Updates"
     : "Most Popular Resources";
 });
-
-const performSearch = () => {
-  console.log("Searching for:", searchQuery.value);
-  // Implement search functionality here
-};
 
 const addToSearch = (tag) => {
   searchQuery.value += " " + tag;
@@ -231,12 +198,32 @@ const addToSearch = (tag) => {
 
 const viewResource = (id) => {
   console.log("Viewing resource:", id);
+  window.location.href = "/preview/" + id;
   // Implement resource viewing functionality here
 };
 
 definePageMeta({
   middleware: ["auth"],
 });
+
+const searchQuery = ref("");
+
+const updateSearchSuggestions = (val) => {
+  if (val && val.length > 0) {
+    searchQuery.value = val;
+  }
+};
+
+const performSearch = async () => {
+  console.log("Search for:", searchQuery.value);
+};
+
+const onSearchPage = () => {
+  window.location.href = "/search/" + searchQuery.value;
+};
+
+const suggestList = await ref(fetchData.value.map((item) => item.title));
+console.log(suggestList.value);
 </script>
 
 <style scoped>

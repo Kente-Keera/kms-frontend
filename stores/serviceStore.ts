@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import Search from "~~/pages/search/[search].vue";
 export const useServiceStore = defineStore("service", {
   state: () => {
     return {
@@ -6,7 +7,10 @@ export const useServiceStore = defineStore("service", {
       profile: [],
 
       knowledge: [],
+      search: [],
       group: [],
+
+      knowledgeId: null,
     };
   },
   actions: {
@@ -15,7 +19,7 @@ export const useServiceStore = defineStore("service", {
     },
 
     async setLogin(body: { username: string; password: string | null }) {
-      const data = await interceptor(`auth/login`, "POST", body);
+      const data: any = await interceptor(`auth/login`, "POST", body);
 
       if (data?.message === "Email or Password Incorrect") {
         return data?.message;
@@ -39,7 +43,7 @@ export const useServiceStore = defineStore("service", {
 
     async getKnowledge() {
       const data: any = await interceptor(`knowledges`, "GET", undefined);
-  
+
       this.knowledge = await data;
     },
 
@@ -47,6 +51,38 @@ export const useServiceStore = defineStore("service", {
       const data: any = await interceptor(`group`, "GET", undefined);
 
       this.group = await data;
+    },
+
+    async createKnowledge(body: any) {
+      const data: any = await interceptor(`knowledges/create`, "POST", body);
+
+      if (data?.id) {
+        return "SUCCESS";
+      }
+    },
+    async getSearchKnowledge(word: string) {
+      if (word === null) {
+        const data: any = await interceptor(
+          `knowledges/search/?keyword=`,
+          "GET",
+          undefined
+        );
+
+        this.search = await data;
+      } else {
+        const data: any = await interceptor(
+          `knowledges/search/?keyword=${word}`,
+          "GET",
+          undefined
+        );
+
+        this.search = await data;
+      }
+    },
+
+    async getKnowledgeById(id: any) {
+      const data: any = await interceptor(`knowledges/${id}`, "GET", undefined);
+      this.knowledgeId = await data;
     },
   },
 });

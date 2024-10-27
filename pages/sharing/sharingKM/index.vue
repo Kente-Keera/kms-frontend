@@ -61,7 +61,7 @@
                   allow-overflow
                   :filter="filterTags"
                 ></v-combobox>
-                <v-combobox
+                <!-- <v-combobox
                   v-model="knowledgeProfile.targetGroup"
                   :items="availabletargetGroups"
                   label="Target Reader"
@@ -69,13 +69,13 @@
                   chips
                   small-chips
                   variant="outlined"
-                ></v-combobox>
-                <v-file-input
+                ></v-combobox> -->
+                <!-- <v-file-input
                   v-model="knowledgeProfile.image"
                   label="Cover Image"
                   accept="image/*"
                   prepend-icon="mdi-camera"
-                ></v-file-input>
+                ></v-file-input> -->
               </v-form>
               <div class="d-flex justify-space-between mt-5">
                 <v-btn
@@ -103,7 +103,7 @@
                   <v-radio label="Write Text" value="text"></v-radio>
                   <v-radio label="Upload File" value="file"></v-radio>
                 </v-radio-group>
-                
+
                 <v-textarea
                   v-if="contentType === 'text'"
                   v-model="content"
@@ -149,7 +149,8 @@
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-title>
-                    Type of knowledge: {{ knowledgeProfile.type || "Not selected" }}
+                    Type of knowledge:
+                    {{ knowledgeProfile.type || "Not selected" }}
                   </v-list-item-title>
                 </v-list-item>
                 <v-list-item>
@@ -178,12 +179,12 @@
                     }}
                   </v-list-item-title>
                 </v-list-item>
-                <v-list-item>
+                <!-- <v-list-item>
                   <v-list-item-title>
                     Target Group:
                     {{ knowledgeProfile.targetGroup || "Not selected" }}
                   </v-list-item-title>
-                </v-list-item>
+                </v-list-item> -->
                 <v-list-item>
                   <v-list-item-title>
                     Content Type: {{ contentType }}
@@ -216,7 +217,13 @@
                 <v-btn color="primary" flat rounded="3" @click="prevStep">
                   Previous
                 </v-btn>
-                <v-btn color="success" flat rounded="3" @click="submitKnowledge">
+                <v-btn
+                  color="success"
+                  flat
+                  rounded="3"
+                  :disabled="submitDisable"
+                  @click="submitKnowledge"
+                >
                   Submit
                 </v-btn>
               </div>
@@ -228,15 +235,32 @@
 
     <!-- Success Popup -->
     <v-dialog v-model="successDialog" persistent max-width="600px">
-      <v-card class="pa-4 text-center mx-auto d-flex flex-column align-center" elevation="12" rounded="lg">
-        <v-icon class="mb-5" color="success" icon="mdi-check-circle" size="112"></v-icon>
+      <v-card
+        class="pa-4 text-center mx-auto d-flex flex-column align-center"
+        elevation="12"
+        rounded="lg"
+      >
+        <v-icon
+          class="mb-5"
+          color="success"
+          icon="mdi-check-circle"
+          size="112"
+        ></v-icon>
         <h2 class="text-h5 mb-6">Knowledge Added Successfully</h2>
         <p class="mb-4 text-medium-emphasis text-body-2">
-          Your knowledge has been successfully added to the system. You will be redirected to the sharing page shortly.
+          Your knowledge has been successfully added to the system. You will be
+          redirected to the sharing page shortly.
         </p>
         <v-divider class="mb-4"></v-divider>
         <div class="text-end">
-          <v-btn class="text-none" color="success" variant="flat" width="90" rounded @click="closeSuccessDialog">
+          <v-btn
+            class="text-none"
+            color="success"
+            variant="flat"
+            width="90"
+            rounded
+            @click="closeSuccessDialog"
+          >
             Done
           </v-btn>
         </div>
@@ -244,6 +268,61 @@
     </v-dialog>
   </v-container>
 </template>
+
+<script setup>
+import { useServiceStore } from "../../../stores/serviceStore";
+
+const store = useServiceStore();
+const submitDisable = ref(false);
+const successDialog = ref(false);
+
+const knowledgeProfile = ref({
+  title: "",
+  description: "",
+  type: "",
+  group: "",
+  category: "",
+  subcategory: "",
+  tags: [],
+  targetGroup: [],
+  image: null,
+});
+
+const file = ref(null);
+
+const submitKnowledge = async () => {
+  let formData = new FormData();
+
+  formData.append("title", knowledgeProfile.value.title);
+  formData.append("description", knowledgeProfile.value.description);
+  formData.append("type", knowledgeProfile.value.type);
+  formData.append("group", knowledgeProfile.value.group);
+  formData.append("category", knowledgeProfile.value.category);
+  formData.append("sub_categoryId", "cm2pu7srz00051299dw68g41r");
+  formData.append("tag", knowledgeProfile.value.tags);
+  formData.append("targetGroup", knowledgeProfile.value.targetGroup);
+  formData.append("file", file.value);
+  formData.append("published", true);
+
+  const resp = await store.createKnowledge(formData);
+
+  if (resp === "SUCCESS") {
+    successDialog.value = true;
+
+    setTimeout(() => {
+      submitDisable.value = false;
+      navigateTo({ path: "/sharing" });
+    }, 3000);
+  } else {
+    submitDisable.value = false;
+  }
+};
+
+const closeSuccessDialog = async () => {
+  submitDisable.value = false;
+  navigateTo({ path: "/sharing" });
+};
+</script>
 
 <script>
 export default {
@@ -264,12 +343,9 @@ export default {
       },
       contentType: "text",
       content: "",
-      file: null,
+
       successDialog: false,
-      availableType: [
-        "Tacit Knowledge",
-        "Explicit Knowledge",
-      ],
+      availableType: ["Tacit Knowledge", "Explicit Knowledge"],
       availableGroup: [
         "Requirement",
         "Design",
@@ -337,23 +413,11 @@ export default {
         this.step--;
       }
     },
-    submitKnowledge() {
-      // Here you would typically send the data to your backend
-      // For now, we'll just show the success dialog
-      this.successDialog = true;
-      // Set a timeout to redirect after 3 seconds
-      setTimeout(() => {
-        this.closeSuccessDialog();
-      }, 3000);
-    },
+
     handleFileUpload(event) {
       this.file = event.target.files[0];
     },
-    closeSuccessDialog() {
-      this.successDialog = false;
-      this.resetForm();
-      this.$router.push("/sharing");
-    },
+
     resetForm() {
       this.step = 1;
       this.knowledgeProfile = {

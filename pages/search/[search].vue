@@ -202,14 +202,14 @@ import { ref, computed } from "vue";
 // ###############
 import { useServiceStore } from "../../stores/serviceStore.ts";
 const store = useServiceStore();
-
-await store.getKnowledge();
-const fetchData = ref(store.knowledge);
-// ###############
 const route = useRoute();
 
-// Search query and suggestions
 const searchQuery = ref(route.params.search);
+await store.getSearchKnowledge(searchQuery.value);
+const fetchData = ref(store.search);
+// ###############
+
+// Search query and suggestions
 
 const searchSuggestions = ref([]);
 const filteredSearchSuggestions = computed(() => {
@@ -624,7 +624,7 @@ const clearFilters = () => {
 };
 
 const onSearchPage = () => {
-  if (searchQuery.value === undefined) {
+  if (searchQuery.value === null) {
     window.location.href = "/search";
   } else {
     window.location.href = "/search/" + searchQuery.value;
