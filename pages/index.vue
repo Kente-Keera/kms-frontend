@@ -9,7 +9,7 @@
           Your journey to discovery starts here. Explore endless insights,
           resources, and knowledge to fuel your growth.
         </p>
-        <v-row dense>
+        <v-row>
           <v-col cols="12" md="10">
             <v-autocomplete
               v-model="searchQuery"
@@ -18,7 +18,7 @@
               prepend-inner-icon="mdi-magnify"
               variant="outlined"
               hide-details
-              class="custom-search-bar mb-5 w-100"
+              class="custom-search-bar mb-5"
               @update:search="updateSearchSuggestions"
               @keyup.enter="performSearch"
             ></v-autocomplete>
@@ -73,10 +73,10 @@
               >
                 <v-img
                   src="https://cdn.vuetifyjs.com/images/cards/forest-art.jpg"
-                  height="180px"
+                  height="240px"
                   cover
                 ></v-img>
-                <v-card-title class="mt-4"
+                <v-card-title class="mt-4" style="height: 60px"
                   ><h3>{{ knowledge.title }}</h3></v-card-title
                 >
                 <v-card-text>
@@ -91,7 +91,7 @@
                       </span>
                     </div>
                   </div>
-                  <p class="mt-2">{{ knowledge.description }}</p>
+                  <p class="mt-5 " style="height: 60px;">{{ knowledge.description }}</p>
                   <div class="tags d-flex flex-wrap mt-3">
                     <v-chip
                       v-for="(tag, index) in knowledge?.tag.split(',')"
@@ -163,11 +163,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
 
 // ###############
 import { useServiceStore } from "../../stores/serviceStore.ts";
-import { CloudFog } from "lucide-vue-next";
 const store = useServiceStore();
 
 await store.getKnowledge();
@@ -177,13 +175,13 @@ const fetchData = ref(store.knowledge);
 const activeTab = ref("recent");
 
 const tags = [
-  "#Requirement",
-  "#Design",
-  "#Construction",
-  "#Testing",
-  "#Maintenance",
-  "#Quality",
-  "#Management",
+  "Requirement",
+  "Design",
+  "Construction",
+  "Testing",
+  "Maintenance",
+  "Quality",
+  "Management",
 ];
 
 const tabTitle = computed(() => {
@@ -197,9 +195,7 @@ const addToSearch = (tag) => {
 };
 
 const viewResource = (id) => {
-  console.log("Viewing resource:", id);
   window.location.href = "/preview/" + id;
-  // Implement resource viewing functionality here
 };
 
 definePageMeta({
@@ -233,11 +229,6 @@ console.log(suggestList.value);
   padding: 80px 0;
 }
 
-.custom-search-bar {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
 .custom-search-bar :deep(.v-field__outline__start),
 .custom-search-bar :deep(.v-field__outline__end) {
   border-color: #333 !important;
@@ -256,5 +247,9 @@ console.log(suggestList.value);
 .resource-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+.v-card-title {
+  white-space: wrap !important;
 }
 </style>

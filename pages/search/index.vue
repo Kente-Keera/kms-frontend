@@ -8,7 +8,7 @@
           <v-col cols="12" md="10">
             <v-autocomplete
               v-model="searchQuery"
-              :items="filteredSearchSuggestions"
+              
               placeholder="Search for Knowledge"
               prepend-inner-icon="mdi-magnify"
               variant="outlined"
@@ -42,10 +42,8 @@
           <!-- Group Dropdown -->
           <v-autocomplete
             v-model="filters.group"
-            :items="['All', ...groupOptions]"
+            :items="groupList"
             label="Group"
-            multiple
-            chips
             clearable
             hide-details
             class="mb-4"
@@ -54,11 +52,10 @@
 
           <!-- Category Dropdown -->
           <v-autocomplete
+            :disabled="!filters.group"
             v-model="filters.category"
-            :items="['All', ...getCategoryOptions]"
+            :items="cateList"
             label="Category"
-            multiple
-            chips
             clearable
             hide-details
             class="mb-4"
@@ -67,11 +64,10 @@
 
           <!-- Subcategory Dropdown -->
           <v-autocomplete
+          :disabled="!filters.category"
             v-model="filters.subcategory"
-            :items="['All', ...getSubcategoryOptions]"
+            :items="subCateList"
             label="Subcategory"
-            multiple
-            chips
             clearable
             hide-details
             class="mb-4 filter-divider"
@@ -79,7 +75,7 @@
           ></v-autocomplete>
 
           <!-- Sort by Date -->
-          <h4 class="mt-4 mb-2">Sort by Date</h4>
+          <!-- <h4 class="mt-4 mb-2">Sort by Date</h4>
           <v-select
             v-model="sortBy"
             :items="sortOptions"
@@ -87,7 +83,7 @@
             hide-details
             class="mb-4 mt-6 filter-divider"
             variant="outlined"
-          ></v-select>
+          ></v-select> -->
 
           <h4 class="mt-4 mb-2">Rating</h4>
           <v-slider
@@ -100,11 +96,16 @@
             color="blue"
           ></v-slider>
           <p class="font-weight-medium">Minimum rating: {{ filters.rating }}</p>
+
+
+          <v-btn class="mt-8" color="secondary" width="100%" @click="onSearchApply()">
+            Apply
+          </v-btn>
         </div>
       </v-col>
 
       <!-- Knowledge Cards Section -->
-      <v-col cols="12" md="9">
+      <v-col cols="12" md="9" class="mt-8">
         <!-- Resources Grid -->
         <v-row>
           <v-col
@@ -114,13 +115,13 @@
             sm="6"
             md="4"
           >
-            <v-card class="resource-card">
+            <v-card class="resource-card" @click="viewResource(knowledge.id)">
               <v-img
                 src="https://cdn.vuetifyjs.com/images/cards/forest-art.jpg"
                 height="180px"
                 cover
               ></v-img>
-              <v-card-title class="mt-4"
+              <v-card-title class="mt-4" style="height: 60px"
                 ><h3>{{ knowledge.title }}</h3></v-card-title
               >
               <v-card-text>
@@ -200,6 +201,7 @@
 <script setup>
 import { ref, computed } from "vue";
 // ###############
+
 import { useServiceStore } from "../../stores/serviceStore.ts";
 const store = useServiceStore();
 
@@ -211,20 +213,60 @@ const route = useRoute();
 // Search query and suggestions
 const searchQuery = ref(route.params.search);
 
+await store.getGroup();
+const group = ref(store.group);
+const groupList = ref(group.value.map((item) => item.name));
+const cateList = ref();
+const subCateList = ref();
+const subCateId = ref();
+
+// Filters
+const filters = ref({
+  group: "",
+  category: "",
+  subcategory: "",
+  rating: 1,
+});
+
+watch(
+  filters,
+  async (newQuestion, oldQuestion) => {
+    const listCate = group.value.find(
+      (item) => item.name === filters.value?.group
+    );
+
+    cateList.value = await listCate?.cate?.map((item) => item.name);
+
+    const listSubCate = await listCate?.cate?.filter(
+      (item) => item?.name === filters?.value?.category
+    );
+
+    subCateList.value = await listSubCate[0]?.sub_cate?.map(
+      (item) => item.name
+    );
+
+    const subcateId = listSubCate[0]?.sub_cate?.filter(
+      (item) => item?.name === filters.value?.subcategory
+    );
+
+    subCateId.value = subcateId[0]?.id;
+
+  },
+  { deep: true }
+);
+
+const onSearchApply = async() => {
+  await store.getSubCate(subCateId.value,filters.value.rating)
+  const applyFilter = await store.subCate.knowledge
+  fetchData.value = applyFilter
+}
+
 const searchSuggestions = ref([]);
 const filteredSearchSuggestions = computed(() => {
   if (!searchQuery.value) return [];
   return searchSuggestions.value.filter((suggestion) =>
     suggestion.toLowerCase().includes(searchQuery.value.toLowerCase())
   );
-});
-
-// Filters
-const filters = ref({
-  group: [],
-  category: [],
-  subcategory: [],
-  rating: 1,
 });
 
 // Filter options
@@ -499,7 +541,9 @@ const resources = ref([
     date: new Date("2024-05-25"),
   },
 ]);
-
+const viewResource = (id) => {
+  window.location.href = "/preview/" + id;
+};
 // Initialize search suggestions
 const initializeSearchSuggestions = () => {
   const suggestions = new Set();
@@ -677,5 +721,9 @@ const onSearchPage = () => {
 
 .no-shadow {
   box-shadow: none !important;
+}
+
+.v-card-title {
+  white-space: wrap !important;
 }
 </style>

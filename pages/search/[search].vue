@@ -8,7 +8,6 @@
           <v-col cols="12" md="10">
             <v-autocomplete
               v-model="searchQuery"
-              :items="filteredSearchSuggestions"
               placeholder="Search for Knowledge"
               prepend-inner-icon="mdi-magnify"
               variant="outlined"
@@ -114,13 +113,13 @@
             sm="6"
             md="4"
           >
-            <v-card class="resource-card">
+            <v-card class="resource-card" @click="viewResource(knowledge.id)">
               <v-img
                 src="https://cdn.vuetifyjs.com/images/cards/forest-art.jpg"
                 height="180px"
                 cover
               ></v-img>
-              <v-card-title class="mt-4"
+              <v-card-title class="mt-4" style="height: 60px"
                 ><h3>{{ knowledge.title }}</h3></v-card-title
               >
               <v-card-text>
@@ -630,6 +629,10 @@ const onSearchPage = () => {
     window.location.href = "/search/" + searchQuery.value;
   }
 };
+
+const viewResource = (id) => {
+  window.location.href = "/preview/" + id;
+};
 </script>
 
 <style scoped>
@@ -677,5 +680,9 @@ const onSearchPage = () => {
 
 .no-shadow {
   box-shadow: none !important;
+}
+
+.v-card-title {
+  white-space: wrap !important;
 }
 </style>

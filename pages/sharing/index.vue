@@ -2,23 +2,23 @@
   <v-container>
     <v-row>
       <v-col>
-        <h1 class="text-h3 font-weight-bold mb-6 mt-6">Knowledge Sharing System</h1>
+        <h1 class="text-h3 font-weight-bold mb-6 mt-6">
+          Knowledge Sharing System
+        </h1>
       </v-col>
     </v-row>
 
     <v-row>
       <v-col>
-        <h1 class="text-h5 font-weight-bold mb-0">Share your knowledge here!</h1>
+        <h1 class="text-h5 font-weight-bold mb-0">
+          Share your knowledge here!
+        </h1>
       </v-col>
     </v-row>
 
     <v-row>
       <v-col>
-        <v-btn
-          color="black"
-          class="text-capitalize"
-          to="/sharing/sharingKM"
-        >
+        <v-btn color="black" class="text-capitalize" to="/sharing/sharingKM">
           Add Knowledge
         </v-btn>
       </v-col>
@@ -38,56 +38,44 @@
 
     <v-row>
       <v-col
-        v-for="knowledge in knowledgeItems"
-        :key="knowledge.id"
+        v-for="(knowledge, index) in fetchData"
+        :key="index"
         cols="12"
+        sm="6"
         md="4"
       >
-        <v-card class="mx-auto resource-card" elevation="2">
+        <v-card class="resource-card h-100" @click="viewResource(knowledge.id)">
           <v-img
-            :src="knowledge.image"
-            height="200px"
+            src="https://cdn.vuetifyjs.com/images/cards/forest-art.jpg"
+            height="240px"
             cover
-            :alt="knowledge.imageAlt"
           ></v-img>
-
-          <v-card-title class="mt-2"><h3>{{ knowledge.title }}</h3></v-card-title>
-          
-          <v-card-text class="mt-2">
-            <v-row align="center" class="mx-0">
-              <v-icon color="#f4b400">mdi-star</v-icon>
-              <span class="ml-1">{{ knowledge.rating }}</span>
-              <div class="text-grey ms-2">({{ knowledge.reviews }}) Reviews</div>
-            </v-row>
-            
-            <p class="mt-2 mt-5">{{ knowledge.description }}</p>
-            
-            <v-chip-group class="mt-3">
+          <v-card-title class="mt-4" style="height: 60px"
+            ><h3>{{ knowledge.title }}</h3></v-card-title
+          >
+          <v-card-text>
+            <div class="d-flex justify-between">
+              <div class="rating d-flex align-center">
+                <v-icon class="mr-2" color="#f4b400">mdi-star</v-icon>
+                <span>
+                  <b>{{ knowledge.avg_rating }}</b> Score</span
+                >
+                <span class="views ml-2 ms-2.5"
+                  >| <b>{{ knowledge?.comment.length }}</b> Comments
+                </span>
+              </div>
+            </div>
+            <p class="mt-5" style="height: 60px">{{ knowledge.description }}</p>
+            <div class="tags d-flex flex-wrap mt-3">
               <v-chip
-                v-for="tag in knowledge.tags"
-                :key="tag"
+                v-for="(tag, index) in knowledge?.tag.split(',')"
+                :key="index"
                 class="mr-2 mb-2"
-                color="grey-lighten-3"
-                text-color="grey-darken-3"
-                small
+                color="gray"
+                text-color="secondary"
               >
                 {{ tag }}
               </v-chip>
-            </v-chip-group>
-
-            <v-switch
-              v-model="knowledge.isPublished"
-              :label="`${knowledge.isPublished ? 'Published' : 'Unpublished'}`"
-              false-value="unpublished"
-              true-value="published"
-              hide-details
-              class="mt-0"
-              color="blue"
-              @change="updatePublishStatus(knowledge)"
-            ></v-switch>
-
-            <div class="mt-3 text-caption text-grey">
-              Created: {{ formatDate(knowledge.createdAt) }}
             </div>
           </v-card-text>
         </v-card>
@@ -96,64 +84,14 @@
   </v-container>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      knowledgeItems: [
-        {
-          id: 1,
-          title: 'Introduction to Vue.js',
-          description: 'A guide to Vue.js basics',
-          image: 'https://cdn.vuetifyjs.com/images/cards/forest-art.jpg',
-          imageAlt: 'Placeholder image for Introduction to Vue.js',
-          rating: 4.5,
-          reviews: 64,
-          tags: ['Vue.js', 'JavaScript', 'Frontend'],
-          isPublished: 'published',
-          createdAt: new Date('2023-05-15'),
-        },
-        {
-          id: 2,
-          title: 'Advanced TypeScript',
-          description: 'Mastering TypeScript with advanced features',
-          image: 'https://cdn.vuetifyjs.com/images/cards/forest-art.jpg',
-          imageAlt: 'Placeholder image for Advanced TypeScript',
-          rating: 4.0,
-          reviews: 98,
-          tags: ['TypeScript', 'JavaScript'],
-          isPublished: 'published',
-          createdAt: new Date('2023-06-01'),
-        },
-        {
-          id: 3,
-          title: 'RESTful API Design',
-          description: 'Best practices for RESTful API design',
-          image: 'https://cdn.vuetifyjs.com/images/cards/forest-art.jpg',
-          imageAlt: 'Placeholder image for RESTful API Design',
-          rating: 4.5,
-          reviews: 150,
-          tags: ['API', 'REST', 'Backend'],
-          isPublished: 'published',
-          createdAt: new Date('2023-05-20'),
-        },
-      ],
-    }
-  },
-  methods: {
-    updatePublishStatus(knowledge) {
-      console.log(`Knowledge "${knowledge.title}" is now ${knowledge.isPublished}`)
-      // Here you can add logic to update the publish status in your backend
-    },
-    formatDate(date) {
-      return new Intl.DateTimeFormat('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      }).format(date);
-    }
-  }
-}
+<script setup>
+// ###############
+import { useServiceStore } from "../../stores/serviceStore.ts";
+const store = useServiceStore();
+
+await store.getUserKnowledge();
+const fetchData = ref(store.profileKnowledge);
+// ###############
 </script>
 
 <style scoped>

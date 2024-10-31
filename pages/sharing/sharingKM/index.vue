@@ -34,19 +34,21 @@
                 ></v-combobox>
                 <v-combobox
                   v-model="knowledgeProfile.group"
-                  :items="availableGroup"
+                  :items="groupList"
                   label="Group of Knowledge"
                   variant="outlined"
                 ></v-combobox>
                 <v-combobox
+                  :disabled="!knowledgeProfile.group"
                   v-model="knowledgeProfile.category"
-                  :items="availableCategory"
+                  :items="cateList"
                   label="Category"
                   variant="outlined"
                 ></v-combobox>
                 <v-combobox
+                  :disabled="!knowledgeProfile.category"
                   v-model="knowledgeProfile.subcategory"
-                  :items="availableSubcategory"
+                  :items="subCateList"
                   label="Sub-Category"
                   variant="outlined"
                 ></v-combobox>
@@ -120,6 +122,10 @@
                   required
                 ></v-file-input>
               </v-form>
+
+              <v-card class="pa-5">
+                <div v-html="content"></div>
+              </v-card>
               <div class="d-flex justify-space-between mt-5">
                 <v-btn color="primary" flat rounded="3" @click="prevStep">
                   Previous
@@ -273,8 +279,10 @@
 import { useServiceStore } from "../../../stores/serviceStore";
 
 const store = useServiceStore();
-const submitDisable = ref(false);
-const successDialog = ref(false);
+
+await store.getGroup();
+
+const content = ref();
 
 const knowledgeProfile = ref({
   title: "",
@@ -288,7 +296,46 @@ const knowledgeProfile = ref({
   image: null,
 });
 
+const validateForm = ref(false);
+
+const group = ref(store.group);
+
+const groupList = ref(group.value.map((item) => item.name));
+const cateList = ref();
+const subCateList = ref();
+const subCateId = ref();
+
+watch(
+  knowledgeProfile,
+  async (newQuestion, oldQuestion) => {
+    const listCate = group.value.find(
+      (item) => item.name === knowledgeProfile.value?.group
+    );
+    cateList.value = await listCate?.cate?.map((item) => item.name);
+
+    const listSubCate = await listCate?.cate?.filter(
+      (item) => item?.name === knowledgeProfile?.value?.category
+    );
+
+    subCateList.value = await listSubCate[0]?.sub_cate?.map(
+      (item) => item.name
+    );
+
+    const subcateId = listSubCate[0]?.sub_cate?.filter(
+      (item) => item?.name === knowledgeProfile.value?.subcategory
+    );
+
+    subCateId.value = subcateId[0]?.id;
+  },
+  { deep: true }
+);
+
+const submitDisable = ref(false);
+const successDialog = ref(false);
+
 const file = ref(null);
+
+const user = useCookie("_user");
 
 const submitKnowledge = async () => {
   let formData = new FormData();
@@ -298,11 +345,12 @@ const submitKnowledge = async () => {
   formData.append("type", knowledgeProfile.value.type);
   formData.append("group", knowledgeProfile.value.group);
   formData.append("category", knowledgeProfile.value.category);
-  formData.append("sub_categoryId", "cm2pu7srz00051299dw68g41r");
+  formData.append("sub_categoryId", subCateId.value);
   formData.append("tag", knowledgeProfile.value.tags);
   formData.append("targetGroup", knowledgeProfile.value.targetGroup);
+  formData.append("content", content.value);
   formData.append("file", file.value);
-  formData.append("published", true);
+  formData.append("userId", user.value);
 
   const resp = await store.createKnowledge(formData);
 
@@ -342,36 +390,10 @@ export default {
         image: null,
       },
       contentType: "text",
-      content: "",
 
       successDialog: false,
       availableType: ["Tacit Knowledge", "Explicit Knowledge"],
-      availableGroup: [
-        "Requirement",
-        "Design",
-        "Construction",
-        "Testing",
-        "Maintenance",
-        "Quality",
-        "Management",
-      ],
-      availableCategory: [
-        "Type of Requirement",
-        "Priority of Requirement",
-        "User Roles",
-        "Requirement Status",
-        "Integration Testing",
-        "Unit Testing",
-        "Planning",
-        "Execution",
-      ],
-      availableSubcategory: [
-        "Functional Requirement",
-        "Non-Functional Requirement",
-        "Knowledge of Documenting Requirement",
-        "Design Pattern",
-        "System Architecture Knowledge",
-      ],
+
       availableTags: [
         "Type of Requirement",
         "Web Development",
@@ -432,7 +454,7 @@ export default {
         image: null,
       };
       this.contentType = "text";
-      this.content = "";
+
       this.file = null;
     },
     filterTags(item, queryText, itemText) {
